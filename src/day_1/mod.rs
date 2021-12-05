@@ -15,27 +15,22 @@ pub fn task_one() {
   let mut n_increments = 0;
   let mut last: Option<i32> = None;
 
-  match read_lines("./resources/day-1.txt") {
-    Ok(lines) => {
-      // Consumes the iterator, returns an (Optional) String
-      for line in lines {
-        if let Ok(n) = line {
-          match n.parse::<i32>() {
-            Ok(new_val) => {
-              if let Some(value) = last {
-                if new_val > value {
-                  n_increments += 1;
-                }
-              }
-
-              last = Some(new_val);
+  if let Ok(lines) = read_lines("./resources/day-1.txt") {
+    for line in lines {
+      if let Ok(n) = line {
+        if let Ok(new_val) = n.parse::<i32>() {
+          if let Some(value) = last {
+            if new_val > value {
+              n_increments += 1;
             }
-            Err(_) => (),
           }
+
+          last = Some(new_val);
         }
       }
     }
-    Err(e) => println!("Failed to read file with err:{}", e),
+  } else {
+    println!("Failed to read file")
   }
 
   println!("Number of increments: {}", n_increments);
