@@ -4,7 +4,15 @@ use std::path::Path;
 
 const EX_1_FILE_PATH: &str = "./resources/day-1.txt";
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+/*
+ * https://adventofcode.com/2021/day/1
+ *
+ * Read through a file, check if last line (as int)
+ * is larger than the previous value and return number
+ * of times there was an increase.
+ */
+
+pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
   P: AsRef<Path>,
 {
@@ -12,13 +20,6 @@ where
   Ok(io::BufReader::new(file).lines())
 }
 
-/*
-* https://adventofcode.com/2021/day/1
-*
-* Read through a file, check if last line (as int)
-* is larger than the previous value and return number
-* of times there was an increase.
-*/
 pub fn task_one() {
   let mut n_increments = 0;
   let mut last: Option<i32> = None;
