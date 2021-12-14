@@ -4,6 +4,28 @@ use std::io::{self};
 // Number of bits for each line in the problem input
 const N_BITS: usize = 12;
 
+fn most_popular_bits(lines: &Vec<String>, cmp: &dyn Fn(i32, i32) -> char) -> Vec<char> {
+  // Threshold for determining whether '1s' are 'more common'
+  // This is half the total number of lines.
+
+  let midpoint = lines.len() / 2;
+  // Count of '1's in each position
+  let ones_counts = lines.iter().fold(vec![0; N_BITS], |mut counts, line| {
+    for (index, bit) in line.char_indices() {
+      if bit == '1' {
+        counts[index] += 1
+      }
+    }
+
+    counts
+  });
+
+  ones_counts
+    .iter()
+    .map(|n| cmp(*n, midpoint.try_into().unwrap()))
+    .collect()
+}
+
 // For a sequence of size N_BITS strings of 1s and 0s
 // Return as a tuple
 // - String with 1s in each position where 1 is most common.
@@ -71,8 +93,26 @@ fn get_only_substring(strings: &Vec<String>, search: String) -> String {
   panic!("oh no");
 }
 
+fn gamma_cmp(n: i32, midpoint: i32) -> char {
+  if n >= midpoint {
+    '1'
+  } else {
+    '0'
+  }
+}
+
+fn epsilon_cmp(n: i32, midpoint: i32) -> char {
+  if n >= midpoint {
+    '0'
+  } else {
+    '1'
+  }
+}
+
 pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> isize {
-  let (gamma, epsilon) = most_popular_bit_strings(&lines.map(|l| l.unwrap()).collect());
+  let bit_strings = lines.map(|l| l.unwrap()).collect();
+  let gamma = String::from_iter(most_popular_bits(&bit_strings, &gamma_cmp));
+  let epsilon = String::from_iter(most_popular_bits(&bit_strings, &epsilon_cmp));
 
   return isize::from_str_radix(&gamma, 2).unwrap() * isize::from_str_radix(&epsilon, 2).unwrap();
 }
