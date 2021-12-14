@@ -8,7 +8,7 @@ const N_BITS: usize = 12;
 // Return as a tuple
 // - String with 1s in each position where 1 is most common.
 // - String with 0s in each position where 1 is most common.
-fn most_popular_bit_strings(lines: Vec<String>) -> (String, String) {
+fn most_popular_bit_strings(lines: &Vec<String>) -> (String, String) {
   // Threshold for determining whether '1s' are 'more common'
   // This is half the total number of lines.
   let midpoint = lines.len() / 2;
@@ -45,7 +45,7 @@ fn most_popular_bit_strings(lines: Vec<String>) -> (String, String) {
  * matching Strings from `strings`. Once a single match exists for
  * a given substring, return it.
  */
-fn get_only_substring(strings: Vec<String>, search: String) -> String {
+fn get_only_substring(strings: &Vec<String>, search: String) -> String {
   let mut strings_copy = strings.clone();
   let bytes = search.as_bytes();
 
@@ -72,17 +72,17 @@ fn get_only_substring(strings: Vec<String>, search: String) -> String {
 }
 
 pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> isize {
-  let (gamma, epsilon) = most_popular_bit_strings(lines.map(|l| l.unwrap()).collect());
+  let (gamma, epsilon) = most_popular_bit_strings(&lines.map(|l| l.unwrap()).collect());
 
   return isize::from_str_radix(&gamma, 2).unwrap() * isize::from_str_radix(&epsilon, 2).unwrap();
 }
 
 pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> isize {
   let matches: Vec<String> = lines.map(|l| l.unwrap()).collect();
-  let (gamma, epsilon) = most_popular_bit_strings(matches.clone());
+  let (gamma, epsilon) = most_popular_bit_strings(&matches);
 
-  let o2_rating = get_only_substring(matches.clone(), gamma);
-  let co2_rating = get_only_substring(matches.clone(), epsilon);
+  let o2_rating = get_only_substring(&matches, gamma);
+  let co2_rating = get_only_substring(&matches, epsilon);
 
   isize::from_str_radix(&o2_rating, 2).unwrap() * isize::from_str_radix(&co2_rating, 2).unwrap()
 }
