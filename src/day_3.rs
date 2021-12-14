@@ -1,16 +1,15 @@
 use std::fs::File;
 use std::io::{self};
 
-// Number of bits for each line in the problem input
-const N_BITS: usize = 12;
-
 fn most_popular_bits(lines: &Vec<String>, cmp: &dyn Fn(i32, i32) -> char) -> Vec<char> {
   // Threshold for determining whether '1s' are 'more common'
   // This is half the total number of lines.
-
   let midpoint = lines.len() / 2;
+
+  let input_size = lines[0].len();
+
   // Count of '1's in each position
-  let ones_counts = lines.iter().fold(vec![0; N_BITS], |mut counts, line| {
+  let ones_counts = lines.iter().fold(vec![0; input_size], |mut counts, line| {
     for (index, bit) in line.char_indices() {
       if bit == '1' {
         counts[index] += 1
@@ -34,8 +33,11 @@ fn most_popular_bit_strings(lines: &Vec<String>) -> (String, String) {
   // Threshold for determining whether '1s' are 'more common'
   // This is half the total number of lines.
   let midpoint = lines.len() / 2;
+
+  let input_size = lines[0].len();
+
   // Count of '1's in each position
-  let ones_counts = lines.iter().fold(vec![0; N_BITS], |mut counts, line| {
+  let ones_counts = lines.iter().fold(vec![0; input_size], |mut counts, line| {
     for (index, bit) in line.char_indices() {
       if bit == '1' {
         counts[index] += 1
@@ -70,10 +72,11 @@ fn most_popular_bit_strings(lines: &Vec<String>) -> (String, String) {
 fn get_only_substring(strings: &Vec<String>, search: String) -> String {
   let mut strings_copy = strings.clone();
   let bytes = search.as_bytes();
+  let input_size = strings_copy[0].len();
 
   // For each position in `search`, filter out items in
   // `strings_copy` until one remains.
-  for cursor in 0..(N_BITS - 1) {
+  for cursor in 0..(input_size - 1) {
     strings_copy = strings_copy
       .into_iter()
       .filter(|l| l.as_bytes()[cursor] == bytes[cursor])
