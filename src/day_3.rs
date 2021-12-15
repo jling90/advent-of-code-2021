@@ -1,11 +1,10 @@
 use std::fs::File;
 use std::io::{self};
 
-fn most_popular_bits(lines: &Vec<String>, cmp: &dyn Fn(i32, i32) -> char) -> Vec<char> {
+fn most_popular_bits(lines: &Vec<String>, cmp: &dyn Fn(i32, f64) -> char) -> Vec<char> {
   // Threshold for determining whether '1s' are 'more common'
   // This is half the total number of lines.
-  let midpoint = lines.len() / 2;
-
+  let midpoint = lines.len() as f64 / 2 as f64;
   let input_size = lines[0].len();
 
   // Count of '1's in each position
@@ -19,48 +18,7 @@ fn most_popular_bits(lines: &Vec<String>, cmp: &dyn Fn(i32, i32) -> char) -> Vec
     counts
   });
 
-  ones_counts
-    .iter()
-    .map(|n| cmp(*n, midpoint.try_into().unwrap()))
-    .collect()
-}
-
-// For a sequence of size N_BITS strings of 1s and 0s
-// Return as a tuple
-// - String with 1s in each position where 1 is most common.
-// - String with 0s in each position where 1 is most common.
-fn most_popular_bit_strings(lines: &Vec<String>) -> (String, String) {
-  // Threshold for determining whether '1s' are 'more common'
-  // This is half the total number of lines.
-  let midpoint = lines.len() / 2;
-
-  let input_size = lines[0].len();
-
-  // Count of '1's in each position
-  let ones_counts = lines.iter().fold(vec![0; input_size], |mut counts, line| {
-    for (index, bit) in line.char_indices() {
-      if bit == '1' {
-        counts[index] += 1
-      }
-    }
-
-    counts
-  });
-
-  let mut gamma = "".to_owned();
-  let mut epsilon = "".to_owned();
-
-  ones_counts.iter().for_each(|n| {
-    if *n >= midpoint {
-      gamma.push('1');
-      epsilon.push('0');
-    } else {
-      gamma.push('0');
-      epsilon.push('1');
-    }
-  });
-
-  return (gamma, epsilon);
+  ones_counts.iter().map(|n| cmp(*n, midpoint)).collect()
 }
 
 /**
@@ -69,43 +27,42 @@ fn most_popular_bit_strings(lines: &Vec<String>) -> (String, String) {
  * matching Strings from `strings`. Once a single match exists for
  * a given substring, return it.
  */
-fn get_only_substring(strings: &Vec<String>, search: String) -> String {
+fn get_only_substring(strings: &Vec<String>, cmp: &dyn Fn(i32, f64) -> char) -> String {
   let mut strings_copy = strings.clone();
-  let bytes = search.as_bytes();
-  let input_size = strings_copy[0].len();
+  let input_size = strings[0].len();
 
   // For each position in `search`, filter out items in
   // `strings_copy` until one remains.
-  for cursor in 0..(input_size - 1) {
+  for cursor in 0..(input_size) {
+    let bit_to_check = most_popular_bits(&strings_copy, &cmp)[cursor];
+
     strings_copy = strings_copy
       .into_iter()
-      .filter(|l| l.as_bytes()[cursor] == bytes[cursor])
+      .filter(|l| l.chars().nth(cursor).unwrap() == bit_to_check)
       .collect();
 
     if strings_copy.len() == 1 {
       return strings_copy[0].to_string();
     }
-
-    println!(
-      "cursor is {}, strings_copy is {:?}, search is {:?}",
-      cursor, strings_copy, search
-    );
   }
 
-  // FIXME: Pls no stop why are you doing this to me
   panic!("oh no");
 }
 
-fn gamma_cmp(n: i32, midpoint: i32) -> char {
-  if n >= midpoint {
+// If 1 is most popular, select '1'.
+// Break ties by selecting '1'.
+fn gamma_cmp(n: i32, midpoint: f64) -> char {
+  if n as f64 >= midpoint {
     '1'
   } else {
     '0'
   }
 }
 
-fn epsilon_cmp(n: i32, midpoint: i32) -> char {
-  if n >= midpoint {
+// If 1 is most popular, select '0'.
+// Break ties by selecting '0'.
+fn epsilon_cmp(n: i32, midpoint: f64) -> char {
+  if n as f64 >= midpoint {
     '0'
   } else {
     '1'
@@ -121,11 +78,9 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> isize {
 }
 
 pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> isize {
-  let matches: Vec<String> = lines.map(|l| l.unwrap()).collect();
-  let (gamma, epsilon) = most_popular_bit_strings(&matches);
-
-  let o2_rating = get_only_substring(&matches, gamma);
-  let co2_rating = get_only_substring(&matches, epsilon);
+  let bit_strings: Vec<String> = lines.map(|l| l.unwrap()).collect();
+  let o2_rating = get_only_substring(&bit_strings, &gamma_cmp);
+  let co2_rating = get_only_substring(&bit_strings, &epsilon_cmp);
 
   isize::from_str_radix(&o2_rating, 2).unwrap() * isize::from_str_radix(&co2_rating, 2).unwrap()
 }
