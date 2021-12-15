@@ -36,10 +36,7 @@ fn get_only_substring(strings: &Vec<String>, cmp: &dyn Fn(i32, f64) -> char) -> 
   for cursor in 0..(input_size) {
     let bit_to_check = most_popular_bits(&strings_copy, &cmp)[cursor];
 
-    strings_copy = strings_copy
-      .into_iter()
-      .filter(|l| l.chars().nth(cursor).unwrap() == bit_to_check)
-      .collect();
+    strings_copy.retain(|l| l.chars().nth(cursor).unwrap() == bit_to_check);
 
     if strings_copy.len() == 1 {
       return strings_copy[0].to_string();
