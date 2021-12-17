@@ -1,10 +1,12 @@
 use std::env;
 mod day_1;
 mod day_2;
+mod day_4;
 mod util;
 
 const EX_1_FILE_PATH: &str = "./resources/day-1.txt";
 const EX_2_FILE_PATH: &str = "./resources/day-2.txt";
+const EX_4_FILE_PATH: &str = "./resources/day-4.txt";
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -40,6 +42,17 @@ fn main() {
             "2" => {
                 if let Ok(lines) = util::read_lines(EX_2_FILE_PATH) {
                     println!("{}", day_2::task_two(lines));
+                } else {
+                    println!("Failed to read file");
+                }
+            }
+
+            _ => println!("No match for exercise {}, task {}", day_num, task_num),
+        },
+        "4" => match task_num.as_str() {
+            "1" => {
+                if let Ok(lines) = util::read_lines(EX_4_FILE_PATH) {
+                    println!("{}", day_4::task_one(lines));
                 } else {
                     println!("Failed to read file");
                 }
