@@ -25,8 +25,8 @@ fn parse_bingo_input(mut lines: io::Lines<io::BufReader<File>>) -> (Vec<u8>, Vec
   // Skip an empty line of input
   lines.next();
 
-  // Calculate size of grids
-  let mut grid_iter = lines.take_while(|line| line.is_ok()).peekable();
+  // Calculate size of grids by peeking at the first grid row
+  let mut grid_iter = lines.peekable();
   let grid_size = parse_grid_line(grid_iter.peek().unwrap().as_deref()).len();
 
   // Grab grids until lines is exhausted
@@ -63,20 +63,11 @@ fn get_winning_sum(grid: HashSet<&u8>, to_exclude: &HashSet<&u8>) -> u32 {
 fn get_winning_score(numbers: &[u8], grids: &Vec<Vec<u8>>, grid_size: usize) -> Option<u32> {
   let numbers_set: HashSet<_> = HashSet::from_iter(numbers.iter());
 
-  // TODO: pass this through to calculation w/o mut
-  let mut winning_sum: u32 = 0;
-
-  if let Some(_) = grids.iter().find(|grid| {
+  for grid in grids {
     for i in 0..(grid_size - 1) {
-      let row: HashSet<_> = HashSet::from_iter(&grid[i * grid_size..(i * grid_size + grid_size)]);
-
       let grid_set: HashSet<_> = HashSet::from_iter(grid.iter());
 
-      if numbers_set.is_superset(&row) {
-        winning_sum = get_winning_sum(grid_set, &numbers_set);
-        return true;
-      }
-
+      let row: HashSet<_> = HashSet::from_iter(&grid[i * grid_size..(i * grid_size + grid_size)]);
       let column: HashSet<_> = HashSet::from_iter(
         grid
           .iter()
@@ -85,32 +76,25 @@ fn get_winning_score(numbers: &[u8], grids: &Vec<Vec<u8>>, grid_size: usize) -> 
           .collect::<Vec<&u8>>(),
       );
 
-      if numbers_set.is_superset(&column) {
-        winning_sum = get_winning_sum(grid_set, &numbers_set);
-        return true;
+      if numbers_set.is_superset(&row) || numbers_set.is_superset(&column) {
+        return Some(get_winning_sum(grid_set, &numbers_set));
       }
     }
-    false
-  }) {
-    return Some(winning_sum);
-  } else {
-    None
   }
+  None
 }
 
 pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> u32 {
   let (numbers, grids, grid_size) = parse_bingo_input(lines);
 
-  // Since a "win" requires at least 5 guesses, eagerly take the first 5.
-  let mut guess_index = 4;
-
-  while guess_index < numbers.len() {
+  // Since a "win" requires at least five guesses,
+  // setting initial value to 4 eagerly takes the first five.
+  for guess_index in 4..numbers.len() {
     let guesses = &numbers[..guess_index];
-    if let Some(winning_score) = get_winning_score(guesses, &grids, grid_size) {
-      return winning_score * u32::from(*guesses.last().unwrap());
-    }
 
-    guess_index += 1;
+    if let Some(winning_score) = get_winning_score(guesses, &grids, grid_size) {
+      return winning_score * u32::from(guesses[guess_index - 1]);
+    }
   }
 
   panic!("No winning board found :(");
