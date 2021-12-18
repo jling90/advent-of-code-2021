@@ -60,7 +60,36 @@ fn get_winning_sum(grid: HashSet<&u8>, to_exclude: &HashSet<&u8>) -> u32 {
  * - if any grid has a win, return `Some(winning_score)`.
  * - else `None`.
  */
-fn get_winning_score(numbers: &[u8], grids: &Vec<Vec<u8>>, grid_size: usize) -> Option<u32> {
+fn get_first_winning_score(numbers: &[u8], grids: &Vec<Vec<u8>>, grid_size: usize) -> Option<u32> {
+  let numbers_set: HashSet<_> = HashSet::from_iter(numbers.iter());
+
+  for grid in grids {
+    for i in 0..(grid_size - 1) {
+      let grid_set: HashSet<_> = HashSet::from_iter(grid.iter());
+
+      let row: HashSet<_> = HashSet::from_iter(&grid[i * grid_size..(i * grid_size + grid_size)]);
+      let column: HashSet<_> = HashSet::from_iter(
+        grid
+          .iter()
+          .step_by(grid_size)
+          .map(|n| n)
+          .collect::<Vec<&u8>>(),
+      );
+
+      if numbers_set.is_superset(&row) || numbers_set.is_superset(&column) {
+        return Some(get_winning_sum(grid_set, &numbers_set));
+      }
+    }
+  }
+  None
+}
+
+/**
+ * Given a Vec of guesses and a Vec of grids:
+ * - once the last grid has a win, return `Some(winning_score)`.
+ * - else `None`.
+ */
+fn get_last_winning_score(numbers: &[u8], grids: &Vec<Vec<u8>>, grid_size: usize) -> Option<u32> {
   let numbers_set: HashSet<_> = HashSet::from_iter(numbers.iter());
 
   for grid in grids {
@@ -92,7 +121,26 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> u32 {
   for guess_index in 4..numbers.len() {
     let guesses = &numbers[..guess_index];
 
-    if let Some(winning_score) = get_winning_score(guesses, &grids, grid_size) {
+    if let Some(winning_score) = get_first_winning_score(guesses, &grids, grid_size) {
+      return winning_score * u32::from(guesses[guess_index - 1]);
+    }
+  }
+
+  panic!("No winning board found :(");
+}
+
+/**
+ * Like task_one, but use the last-winning board
+ */
+pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> u32 {
+  let (numbers, grids, grid_size) = parse_bingo_input(lines);
+
+  // Since a "win" requires at least five guesses,
+  // setting initial value to 4 eagerly takes the first five.
+  for guess_index in 4..numbers.len() {
+    let guesses = &numbers[..guess_index];
+
+    if let Some(winning_score) = get_last_winning_score(guesses, &grids, grid_size) {
       return winning_score * u32::from(guesses[guess_index - 1]);
     }
   }
