@@ -79,20 +79,6 @@ fn check_board_win(numbers: &[u8], grid: &Vec<u8>, grid_size: usize) -> bool {
   false
 }
 
-fn get_first_winning_board_index(
-  numbers: &[u8],
-  grids: &Vec<Vec<u8>>,
-  grid_size: usize,
-) -> Option<usize> {
-  for (grid_index, grid) in grids.iter().enumerate() {
-    if check_board_win(numbers, grid, grid_size) {
-      return Some(grid_index);
-    }
-  }
-
-  None
-}
-
 pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> u32 {
   let (numbers, grids, grid_size) = parse_bingo_input(lines);
 
@@ -101,9 +87,10 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> u32 {
   for guess_index in 4..numbers.len() {
     let guesses = &numbers[..guess_index];
 
-    if let Some(winning_board_index) = get_first_winning_board_index(guesses, &grids, grid_size) {
-      return get_winning_sum(&grids[winning_board_index], guesses)
-        * u32::from(guesses[guess_index - 1]);
+    for grid in &grids {
+      if check_board_win(guesses, grid, grid_size) {
+        return get_winning_sum(grid, guesses) * u32::from(guesses[guess_index - 1]);
+      }
     }
   }
 
