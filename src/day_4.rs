@@ -102,21 +102,32 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> u32 {
  */
 pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> u32 {
   let (numbers, mut grids, grid_size) = parse_bingo_input(lines);
-
-  // Since a "win" requires at least five guesses,
-  // setting initial value to 4 eagerly takes the first five.
-  let mut guess_index = 4;
-  let mut guesses = &numbers[..guess_index];
+  let mut winning_scores: Vec<u32> = vec![];
 
   // Loop while any non-winning grids remain.
   // When the loop terminates, the score for the last winning
   // board is stored in `final_score`.
-  while guess_index < numbers.len() && grids.len() > 1 {
-    guesses = &numbers[..guess_index];
-    grids.retain(|grid| !check_board_win(guesses, grid, grid_size));
+  for guess_index in 4..numbers.len() {
+    let guesses = &numbers[..guess_index];
+    let (won, not_won): (Vec<Vec<u8>>, Vec<Vec<u8>>) = grids
+      .into_iter()
+      .partition(|grid| check_board_win(guesses, grid, grid_size));
 
-    guess_index += 1;
+    if not_won.is_empty() {
+      break;
+    };
+
+    winning_scores.append(
+      &mut won
+        .iter()
+        .map(|winning_grid| {
+          get_winning_sum(winning_grid, guesses) * u32::from(guesses[guess_index - 1])
+        })
+        .collect::<Vec<u32>>(),
+    );
+
+    grids = not_won;
   }
 
-  get_winning_sum(&grids[0], guesses) * u32::from(guesses[guess_index - 1])
+  *winning_scores.last().unwrap()
 }
