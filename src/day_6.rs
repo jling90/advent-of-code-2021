@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::{self};
 
-fn get_timers(mut lines: io::Lines<io::BufReader<File>>, epoch: u8) -> i32 {
+fn get_timers(mut lines: io::Lines<io::BufReader<File>>, epoch: u16) -> u64 {
   let mut timers = lines
     .next()
     .unwrap()
@@ -16,7 +16,7 @@ fn get_timers(mut lines: io::Lines<io::BufReader<File>>, epoch: u8) -> i32 {
     });
 
   for _ in 0..epoch {
-    let mut updates: Vec<i32> = vec![0; 10];
+    let mut updates: Vec<i64> = vec![0; 10];
 
     // Iterate backwards so new items only
     // decrement on next loop.
@@ -38,9 +38,13 @@ fn get_timers(mut lines: io::Lines<io::BufReader<File>>, epoch: u8) -> i32 {
     }
   }
 
-  timers.iter().sum()
+  timers.iter().map(|n| *n as u64).sum()
 }
 
-pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> i32 {
+pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> u64 {
   get_timers(lines, 80)
+}
+
+pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> u64 {
+  get_timers(lines, 256)
 }
