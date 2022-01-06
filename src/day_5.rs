@@ -49,7 +49,7 @@ impl Line {
   }
 }
 
-fn input_to_line(line: String) -> Line {
+fn string_to_line(line: String) -> Line {
   let mut coords = line.split(" -> ");
   let (start_str, finish_str) = (coords.next().unwrap(), coords.next().unwrap());
   let (mut start, mut finish) = (start_str.split(","), finish_str.split(","));
@@ -66,28 +66,26 @@ fn input_to_line(line: String) -> Line {
   }
 }
 
-pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> i32 {
-  let mut overlap_count = 0;
+fn input_to_lines(lines: io::Lines<io::BufReader<File>>) -> impl Iterator<Item = Line> {
+  lines.map(|l| string_to_line(l.unwrap()))
+}
 
+fn get_overlaps<T>(lines: T) -> i32
+where
+  T: Iterator<Item = Line>,
+{
   // FIXME: avoid hardcoding grid size.
   let grid_width = 1000;
-
   let mut grid = vec![0; grid_width * grid_width];
 
+  let mut overlap_count = 0;
+
   for line in lines {
-    if let Ok(n) = line {
-      let l = input_to_line(n);
+    for [x, y] in line.indices() {
+      grid[x as usize + grid_width * y as usize] += 1;
 
-      if !l.is_straight() {
-        continue;
-      }
-
-      for [x, y] in l.indices() {
-        grid[x as usize + grid_width * y as usize] += 1;
-
-        if grid[x as usize + grid_width * y as usize] == 2 {
-          overlap_count += 1;
-        }
+      if grid[x as usize + grid_width * y as usize] == 2 {
+        overlap_count += 1;
       }
     }
   }
@@ -95,27 +93,10 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> i32 {
   overlap_count
 }
 
+pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> i32 {
+  get_overlaps(input_to_lines(lines).filter(|l| l.is_straight()))
+}
+
 pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> i32 {
-  let mut overlap_count = 0;
-
-  // FIXME: avoid hardcoding grid size.
-  let grid_width = 1000;
-
-  let mut grid = vec![0; grid_width * grid_width];
-
-  for line in lines {
-    if let Ok(n) = line {
-      let l = input_to_line(n);
-
-      for [x, y] in l.indices() {
-        grid[x as usize + grid_width * y as usize] += 1;
-
-        if grid[x as usize + grid_width * y as usize] == 2 {
-          overlap_count += 1;
-        }
-      }
-    }
-  }
-
-  overlap_count
+  get_overlaps(input_to_lines(lines))
 }
