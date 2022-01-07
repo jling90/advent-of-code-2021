@@ -23,7 +23,7 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> i32 {
     }
   }
 
-  return x * y;
+  x * y
 }
 
 pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> i32 {
@@ -52,5 +52,5 @@ pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> i32 {
     }
   }
 
-  return x * y;
+  x * y
 }

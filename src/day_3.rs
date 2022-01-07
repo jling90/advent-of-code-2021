@@ -71,7 +71,7 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> isize {
   let gamma = String::from_iter(most_popular_bits(&bit_strings, &gamma_cmp));
   let epsilon = String::from_iter(most_popular_bits(&bit_strings, &epsilon_cmp));
 
-  return isize::from_str_radix(&gamma, 2).unwrap() * isize::from_str_radix(&epsilon, 2).unwrap();
+  isize::from_str_radix(&gamma, 2).unwrap() * isize::from_str_radix(&epsilon, 2).unwrap()
 }
 
 pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> isize {

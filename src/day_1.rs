@@ -27,7 +27,7 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> String {
     }
   }
 
-  return n_increments.to_string();
+  n_increments.to_string()
 }
 
 /*
@@ -69,5 +69,5 @@ pub fn task_two(lines: io::Lines<io::BufReader<File>>) -> String {
     i += 1;
   }
 
-  return n_increments.to_string();
+  n_increments.to_string()
 }
