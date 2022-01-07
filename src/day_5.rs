@@ -75,16 +75,16 @@ where
   T: Iterator<Item = Line>,
 {
   // FIXME: avoid hardcoding grid size.
-  const grid_width: usize = 1000;
-  let mut grid = [0; grid_width * grid_width];
+  const GRID_WIDTH: usize = 1000;
+  let mut grid = [0; GRID_WIDTH * GRID_WIDTH];
 
   let mut overlap_count = 0;
 
   for line in lines {
     for [x, y] in line.indices() {
-      grid[x as usize + grid_width * y as usize] += 1;
+      grid[x as usize + GRID_WIDTH * y as usize] += 1;
 
-      if grid[x as usize + grid_width * y as usize] == 2 {
+      if grid[x as usize + GRID_WIDTH * y as usize] == 2 {
         overlap_count += 1;
       }
     }
