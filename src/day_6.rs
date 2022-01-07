@@ -7,7 +7,7 @@ fn get_timers(mut lines: io::Lines<io::BufReader<File>>, epoch: u16) -> u64 {
     .unwrap()
     .unwrap()
     .split(",")
-    .fold(vec![0; 9], |mut accum, s| {
+    .fold([0; 9], |mut accum, s| {
       if let Ok(timer) = s.parse::<usize>() {
         accum[timer] += 1;
       }

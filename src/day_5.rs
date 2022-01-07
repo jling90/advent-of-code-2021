@@ -75,8 +75,8 @@ where
   T: Iterator<Item = Line>,
 {
   // FIXME: avoid hardcoding grid size.
-  let grid_width = 1000;
-  let mut grid = vec![0; grid_width * grid_width];
+  const grid_width: usize = 1000;
+  let mut grid = [0; grid_width * grid_width];
 
   let mut overlap_count = 0;
 
