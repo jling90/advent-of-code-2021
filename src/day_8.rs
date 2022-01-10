@@ -25,10 +25,7 @@ pub fn task_one(lines: io::Lines<io::BufReader<File>>) -> usize {
     sum
       + outputs.iter().fold(0, |s, o| {
         s + match o.chars().count() {
-          2 => 1,
-          3 => 1,
-          4 => 1,
-          7 => 1,
+          2 | 3 | 4 | 7 => 1,
           _ => 0,
         }
       })
