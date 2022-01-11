@@ -6,6 +6,7 @@ mod day_4;
 mod day_5;
 mod day_6;
 mod day_7;
+mod day_8;
 mod util;
 
 const EX_1_FILE_PATH: &str = "./resources/day-1.txt";
@@ -15,6 +16,7 @@ const EX_4_FILE_PATH: &str = "./resources/day-4.txt";
 const EX_5_FILE_PATH: &str = "./resources/day-5.txt";
 const EX_6_FILE_PATH: &str = "./resources/day-6.txt";
 const EX_7_FILE_PATH: &str = "./resources/day-7.txt";
+const EX_8_FILE_PATH: &str = "./resources/day-8.txt";
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -135,6 +137,23 @@ fn main() {
             "2" => {
                 if let Ok(lines) = util::read_lines(EX_7_FILE_PATH) {
                     println!("{}", day_7::task_two(lines));
+                } else {
+                    println!("Failed to read file");
+                }
+            }
+            _ => println!("No match for exercise {}, task {}", day_num, task_num),
+        },
+        "8" => match task_num.as_str() {
+            "1" => {
+                if let Ok(lines) = util::read_lines(EX_8_FILE_PATH) {
+                    println!("{}", day_8::task_one(lines));
+                } else {
+                    println!("Failed to read file");
+                }
+            }
+            "2" => {
+                if let Ok(lines) = util::read_lines(EX_8_FILE_PATH) {
+                    println!("{}", day_8::task_two(lines));
                 } else {
                     println!("Failed to read file");
                 }
